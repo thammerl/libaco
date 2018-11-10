@@ -1,4 +1,7 @@
-all: build/liblocalsearch.a
+all: build build/liblocalsearch.a
+
+build:
+	mkdir -p build
 
 build/liblocalsearch.a: build/localsearch.o
 	ar rcs build/liblocalsearch.a build/*.o
@@ -10,4 +13,4 @@ doc: ./src/ ./include/liblocalsearch/
 	doxygen
 
 clean: .
-	rm build/*.o build/liblocalsearch.a
+	rm -Rf build

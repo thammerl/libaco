@@ -1,4 +1,13 @@
-all: bin/acotsp
+all: build lib bin bin/acotsp
+
+build:
+	mkdir -p build
+
+lib:
+	mkdir -p lib
+
+bin:
+	mkdir -p bin
 
 bin/acotsp: libaco liblocalsearch build/acotsp.o build/tsp.o
 	cp ../../libaco/trunk/build/libaco.a lib/
@@ -24,4 +33,5 @@ liblocalsearch:
 	make -C ../../liblocalsearch/trunk -f ../../liblocalsearch/trunk/Makefile
 
 clean: .
-	rm include/libaco/*.h build/*.o bin/acotsp
+	rm include/libaco/*.h
+	rm -Rf build lib bin

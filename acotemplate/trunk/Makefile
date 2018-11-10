@@ -1,4 +1,13 @@
-all: bin/acotemplate
+all: build lib bin bin/acotemplate
+
+build:
+	mkdir -p build
+
+lib:
+	mkdir -p lib
+
+bin:
+	mkdir -p bin
 
 bin/acotemplate: libaco liblocalsearch build/acotemplate.o build/template.o
 	cp ../../libaco/trunk/build/libaco.a lib/
@@ -24,4 +33,5 @@ liblocalsearch:
 	make -C ../../liblocalsearch/trunk -f ../../liblocalsearch/trunk/Makefile
 
 clean: .
-	rm include/libaco/*.h build/*.o bin/acotemplate
+	rm include/libaco/*.h
+	rm -Rf build lib bin

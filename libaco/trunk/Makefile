@@ -1,4 +1,7 @@
-all: build/libaco.a
+all: build build/libaco.a
+
+build:
+	mkdir -p build
 
 build/libaco.a: build/ants.o build/graph.o build/util.o
 	ar rcs build/libaco.a build/*.o
@@ -16,4 +19,4 @@ doc: src/ include/libaco/
 	doxygen
 
 clean:
-	rm build/*.o build/libaco.a
+	rm -Rf build
