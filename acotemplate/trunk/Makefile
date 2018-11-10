@@ -3,7 +3,7 @@ all: bin/acotemplate
 bin/acotemplate: libaco liblocalsearch build/acotemplate.o build/template.o
 	cp ../../libaco/trunk/build/libaco.a lib/
 	cp ../../liblocalsearch/trunk/build/liblocalsearch.a lib/
-	g++ -static build/acotemplate.o build/template.o -L./lib/ -laco -o bin/acotemplate
+	g++ build/acotemplate.o build/template.o -L./lib/ -laco -o bin/acotemplate
 
 build/acotemplate.o: src/acotemplate.cpp include/acotemplate/template.h include/libaco/ants.h include/libaco/graph.h include/libaco/util.h
 	g++ -ansi -I include/ -c src/acotemplate.cpp -o build/acotemplate.o

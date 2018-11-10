@@ -168,7 +168,7 @@ Tour &Tour::operator=(const Tour &t) {
   return *this;
 }
 
-bool Tour::operator<(const Tour &t) {
+bool Tour::operator<(const Tour &t) const {
   return this->length_ < t.length_;
 }
 
@@ -188,7 +188,7 @@ Ant &Ant::operator=(const Ant &ant) {
   return *this;
 }
 
-bool Ant::operator<(const Ant &ant) {
+bool Ant::operator<(const Ant &ant) const {
   return (*this->tour) < (*ant.tour);
 }
 

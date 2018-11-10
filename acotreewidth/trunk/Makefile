@@ -3,7 +3,7 @@ all: bin/acotreewidth
 bin/acotreewidth: libaco liblocalsearch build/acotreewidth.o build/decomp.o
 	cp ../../libaco/trunk/build/libaco.a lib/
 	cp ../../liblocalsearch/trunk/build/liblocalsearch.a lib/
-	g++ -static build/acotreewidth.o build/decomp.o -L./lib/ -laco -llocalsearch -o bin/acotreewidth -O3
+	g++ build/acotreewidth.o build/decomp.o -L./lib/ -laco -llocalsearch -o bin/acotreewidth -O3
 
 build/acotreewidth.o: src/acotreewidth.cpp include/acotreewidth/decomp.h include/libaco/ants.h include/libaco/graph.h include/libaco/util.h include/liblocalsearch/localsearch.h
 	g++ -Wall -ansi -I include/ -c src/acotreewidth.cpp -o build/acotreewidth.o -O3

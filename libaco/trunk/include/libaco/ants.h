@@ -122,7 +122,7 @@ class Tour {
     unsigned int capacity();
     void clear();
     Tour &operator=(const Tour &t);
-    bool operator<(const Tour &t);
+    bool operator<(const Tour &t) const;
 };
 
 /// Interface a client of libaco needs to implement.
@@ -201,7 +201,7 @@ class Ant {
     Ant(unsigned int vertices);
     Ant(const Ant &ant);
     Ant &operator=(const Ant &ant);
-    bool operator<(const Ant &ant);
+    bool operator<(const Ant &ant) const;
     virtual ~Ant();
     double get_tour_length();
     std::vector<unsigned int> get_vertices();
