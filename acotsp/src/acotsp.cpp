@@ -15,6 +15,7 @@ static unsigned int iterations = UINT_MAX;
 static double alpha = 1.0;
 static double beta = 1.0;
 static double rho = 0.1;
+static double q = 1.0;
 static double initial_pheromone = -1.0;
 static bool print_tour_flag = false;
 static bool stag_variance_flag = false;
@@ -45,6 +46,7 @@ static void parse_options(int argc, char *argv[]) {
   TCLAP::ValueArg<double> alpha_arg ("a", "alpha", "alpha (influence of pheromone trails)", false, alpha, "double");
   TCLAP::ValueArg<double> beta_arg("b", "beta", "beta (influence of heuristic information)", false, beta, "double");
   TCLAP::ValueArg<double> rho_arg("r", "rho", "pheromone trail evaporation rate", false, rho, "double");
+  TCLAP::ValueArg<double> q_arg("q", "q", "Q parameter, weight of pheromone update", false, q, "double");
   TCLAP::ValueArg<double> initial_pheromone_arg("p", "pheromone", "initial pheromone value", false, initial_pheromone, "double");
   std::vector<unsigned int> allowed;
   allowed.push_back(0);
@@ -75,6 +77,7 @@ static void parse_options(int argc, char *argv[]) {
   cmd.add(alpha_arg);
   cmd.add(beta_arg);
   cmd.add(rho_arg);
+  cmd.add(q_arg);
   cmd.add(initial_pheromone_arg);
   cmd.add(filepath_arg);
   cmd.add(print_tour_arg);
@@ -92,6 +95,7 @@ static void parse_options(int argc, char *argv[]) {
   alpha = alpha_arg.getValue();
   beta = beta_arg.getValue();
   rho = rho_arg.getValue();
+  q = q_arg.getValue();
   initial_pheromone = initial_pheromone_arg.getValue();
   filepath = filepath_arg.getValue();
   print_tour_flag = print_tour_arg.getValue();
@@ -123,6 +127,7 @@ static void set_config(AntColonyConfiguration &config) {
   config.beta = beta;
   config.evaporation_rate = rho;
   config.initial_pheromone = initial_pheromone;
+  config.q = q;
 }
 
 static void set_initial_pheromone(OptimizationProblem *problem, AntColonyConfiguration &config) {

@@ -422,6 +422,7 @@ AntColonyConfiguration::AntColonyConfiguration() {
   beta = 5.0;
   evaporation_rate = 0.1;
   initial_pheromone = 1.0;
+  q = 1.0;
   local_search = LS_ITERATION_BEST;
 }
 
@@ -450,7 +451,7 @@ void SimpleAntColony::update_pheromones() {
   pheromones_->evaporate_all();
   for(std::list<SimpleAnt>::iterator it=ants_->begin();it!=ants_->end();it++) {
     SimpleAnt &ant = (*it);
-    ant.offline_pheromone_update(*problem_, *pheromones_);
+    ant.offline_pheromone_update(*problem_, *pheromones_, q_);
   }
 }
 
@@ -463,7 +464,7 @@ void ElitistAntColony::update_pheromones() {
   best_so_far_->offline_pheromone_update(*problem_, *pheromones_, elitist_weight_);
   for(std::list<SimpleAnt>::iterator it=ants_->begin();it!=ants_->end();it++) {
     SimpleAnt &ant = (*it);
-    ant.offline_pheromone_update(*problem_, *pheromones_);
+    ant.offline_pheromone_update(*problem_, *pheromones_, q_);
   }
 }
 
@@ -494,9 +495,9 @@ void MaxMinAntColony::update_pheromones() {
   pheromones_->evaporate_all();
   unsigned int every_n_iter = best_so_far_frequency_;
   if(i % every_n_iter == 0) {
-    best_so_far_->offline_pheromone_update(*problem_, *pheromones_);
+    best_so_far_->offline_pheromone_update(*problem_, *pheromones_, q_);
   } else {
-    best_iteration_->offline_pheromone_update(*problem_, *pheromones_);
+    best_iteration_->offline_pheromone_update(*problem_, *pheromones_, q_);
   }
   i++;
 }
@@ -518,5 +519,5 @@ void ACSAntColony::update_pheromones() {
       pheromones_->evaporate(vertices[i-1], vertices[i]);
     }
   }
-  best_so_far_->offline_pheromone_update(*problem_, *pheromones_);
+  best_so_far_->offline_pheromone_update(*problem_, *pheromones_, q_);
 }
