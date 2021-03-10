@@ -84,6 +84,7 @@ Matrix<unsigned int> *Parser::parse_tsplib(const char *filepath) throw(FileNotFo
     DIMENSION,
     EDGE_WEIGHT_TYPE,
     NODE_COORD_SECTION,
+    EDGE_WEIGHT_SECTION,
     NONE
   };
 
@@ -106,6 +107,8 @@ Matrix<unsigned int> *Parser::parse_tsplib(const char *filepath) throw(FileNotFo
       }
     } else if(keyword.find("NODE_COORD_SECTION") != std::string::npos) {
       s = NODE_COORD_SECTION;
+    } else if(keyword.find("EDGE_WEIGHT_SECTION") != std::string::npos) {
+      s = EDGE_WEIGHT_SECTION;
     }
 
     if (s == DIMENSION) {
@@ -132,7 +135,14 @@ Matrix<unsigned int> *Parser::parse_tsplib(const char *filepath) throw(FileNotFo
           (*distances)[b.num-1][a.num-1] = dab;
         }
       }
+    } else if (s == EDGE_WEIGHT_SECTION) {
+      for(unsigned int i=0;i<distances->rows();i++) {
+        for(unsigned int j=0;j<distances->cols();j++) {
+          file >> (*distances)[i][j];
+        }
+      }
     }
+    
     s = NONE;
   }
   file.close();
