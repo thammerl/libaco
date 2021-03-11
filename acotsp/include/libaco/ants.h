@@ -15,11 +15,11 @@
 /// - Elitist Ant System
 /// - Rank-Based Ant System
 /// - Max-Min Ant System
-/// - Ant Colony System 
+/// - Ant Colony System
 ///
 ///For detailed descriptions of these algorithms take a look at the book "Ant Colony Optimization" by Marco Dorigo and Thomas Stuetzle.
 ///
-///  All this was implemented as part of my Master's Thesis at the Technical University of Vienna I'm currently working on with the prospective title 'Ant Colony Optimization for Tree and Hypertree Decomposition'. 
+///  All this was implemented as part of my Master's Thesis at the Technical University of Vienna I'm currently working on with the prospective title 'Ant Colony Optimization for Tree and Hypertree Decomposition'.
 ///
 /// \section getting_started_sec Getting Started
 ///
@@ -126,7 +126,7 @@ class Tour {
 };
 
 /// Interface a client of libaco needs to implement.
-/// 
+///
 /// Interface to the problem-specific logic a client must supply.
 class OptimizationProblem {
   public:
@@ -160,11 +160,11 @@ class OptimizationProblem {
 
     /// Returns the amount of pheromone that shall be deposited onto the edge pointing to v.
     ///
-    /// \param vertex the vertex 
+    /// \param vertex the vertex
     /// \param tour_length the length of the tour.
     /// \return amount of pheromone that shall be laid on the edge to v.
     virtual double pheromone_update(unsigned int vertex, double tour_length) = 0;
-    
+
     /// Callback that notifies the client code that the current ant has added this vertex to it's tour.
     ///
     /// \param vertex that has been added to the tour.
@@ -210,7 +210,7 @@ class Ant {
     virtual void construct_solution(OptimizationProblem &op, PheromoneMatrix &pheromones, double alpha, double beta) {}
     void construct_rational_solution(OptimizationProblem &op, PheromoneMatrix &pheromones, double alpha, double beta);
     void construct_random_proportional_solution(OptimizationProblem &op, PheromoneMatrix &pheromones, double alpha, double beta);
-    virtual void offline_pheromone_update(OptimizationProblem &op, PheromoneMatrix &pheromones, double weight=1.0) {}
+    virtual void offline_pheromone_update(OptimizationProblem &op, PheromoneMatrix &pheromones, double weight) {}
 };
 
 class SimpleAnt : public Ant {
@@ -219,7 +219,7 @@ class SimpleAnt : public Ant {
     SimpleAnt(const SimpleAnt &ant);
     SimpleAnt &operator=(const SimpleAnt &ant);
     void construct_solution(OptimizationProblem &op, PheromoneMatrix &pheromones, double alpha, double beta);
-    void offline_pheromone_update(OptimizationProblem &op, PheromoneMatrix &pheromones, double weight=1.0);
+    void offline_pheromone_update(OptimizationProblem &op, PheromoneMatrix &pheromones, double weight);
 };
 
 class ACSAnt : public Ant {
@@ -231,7 +231,7 @@ class ACSAnt : public Ant {
     ACSAnt &operator=(const ACSAnt &ant);
     void construct_solution(OptimizationProblem &op, PheromoneMatrix &pheromones, double alpha, double beta);
     void construct_pseudorandom_proportional_solution(OptimizationProblem &op, PheromoneMatrix &pheromones, double alpha, double beta);
-    void offline_pheromone_update(OptimizationProblem &op, PheromoneMatrix &pheromones, double weight=1.0);
+    void offline_pheromone_update(OptimizationProblem &op, PheromoneMatrix &pheromones, double weight);
     void set_q0(double q0);
 };
 
@@ -257,6 +257,8 @@ class AntColonyConfiguration {
     double evaporation_rate;
     /// The initial amount of pheromone deposited on the edges.
     double initial_pheromone;
+    /// The constant Q, weight of the pheromone updates
+    double q;
     /// The type of local search to be performed.
     LocalSearchType local_search;
 
@@ -385,6 +387,7 @@ template<class T=Ant, class P=PheromoneMatrix> class AntColony {
     P *pheromones_;
     double alpha_;
     double beta_;
+    double q_;
     AntColonyConfiguration::LocalSearchType local_search_type_;
     std::list<T> *ants_;
     OptimizationProblem *problem_;
@@ -400,6 +403,7 @@ template<class T=Ant, class P=PheromoneMatrix> class AntColony {
       pheromones_ = new P(problem->number_of_vertices()+1, config.evaporation_rate, config.initial_pheromone);
       alpha_ = config.alpha;
       beta_ = config.beta;
+      q_ = config.q;
       local_search_type_ = config.local_search;
       best_so_far_ = new T(problem->get_max_tour_size());
       best_iteration_ = new T(problem->get_max_tour_size());
@@ -481,7 +485,7 @@ class SimpleAntColony : public AntColony<SimpleAnt> {
 /// Implementation of ACO variant "Elitist Ant System".
 ///
 /// In this ACO variant all ants are allowed to deposit pheromone. Additionally
-/// the best-so-far ant is allowed to deposit pheromone multiplied by some 
+/// the best-so-far ant is allowed to deposit pheromone multiplied by some
 /// elitist_weight_ in every iteration. Tours are constructed random-proportionally.
 class ElitistAntColony : public AntColony<SimpleAnt> {
   private:
