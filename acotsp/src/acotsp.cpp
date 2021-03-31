@@ -18,6 +18,7 @@ static double rho = 0.1;
 static double q = 1.0;
 static double initial_pheromone = -1.0;
 static bool print_tour_flag = false;
+static bool hide_iteration_flag = false;
 static bool stag_variance_flag = false;
 static bool stag_lambda_flag = false;
 static StagnationMeasureType stagnation_measure = STAG_NONE;
@@ -54,6 +55,7 @@ static void parse_options(int argc, char *argv[]) {
   TCLAP::ValuesConstraint<unsigned int> allowed_values( allowed );
   TCLAP::ValueArg<std::string> filepath_arg("f", "file", "path to the input file", true, "", "filepath");
   TCLAP::SwitchArg print_tour_arg("o", "printord", "print best elimination ordering in iteration");
+  TCLAP::SwitchArg hide_iteration_arg("", "hideiter", "hide all information but the final tour length and ordering");
   TCLAP::SwitchArg stag_variance_arg("", "stag_variance", "compute and print variation coefficient stagnation");
   TCLAP::SwitchArg stag_lambda_arg("", "stag_lambda", "compute and print lambda branching factor stagnation");
   TCLAP::ValueArg<double> time_limit_arg("t", "time", "terminate after n seconds (after last iteration is finished)", false, time_limit, "double");
@@ -81,6 +83,7 @@ static void parse_options(int argc, char *argv[]) {
   cmd.add(initial_pheromone_arg);
   cmd.add(filepath_arg);
   cmd.add(print_tour_arg);
+  cmd.add(hide_iteration_arg);
   cmd.add(stag_variance_arg);
   cmd.add(stag_lambda_arg);
   cmd.add(time_limit_arg);
@@ -99,6 +102,7 @@ static void parse_options(int argc, char *argv[]) {
   initial_pheromone = initial_pheromone_arg.getValue();
   filepath = filepath_arg.getValue();
   print_tour_flag = print_tour_arg.getValue();
+  hide_iteration_flag = hide_iteration_arg.getValue();
   stag_variance_flag = stag_variance_arg.getValue();
   stag_lambda_flag = stag_lambda_arg.getValue();
   time_limit = time_limit_arg.getValue();
@@ -226,32 +230,38 @@ int main(int argc, char *argv[]) {
 
   colony = get_ant_colony(problem);
 
-  std::cout << "iter\ttime\tbest\tbest_it";
-  std::cout << ((stagnation_measure != STAG_NONE) ? "\tstagnation" : "");
-  std::cout << (print_tour_flag ? "\tordering" : "");
-  std::cout << std::endl;
+  if(!hide_iteration_flag) {
+    std::cout << "iter\ttime\tbest\tbest_it";
+    std::cout << ((stagnation_measure != STAG_NONE) ? "\tstagnation" : "");
+    std::cout << (print_tour_flag ? "\tordering" : "");
+    std::cout << std::endl;
+  }
+
   timer();
   for(unsigned int i=0;i<iterations && timer() < time_limit;i++) {
     colony->run();
-    std::cout << (i+1) << "\t";
-    std::cout << timer() << "\t";
-    std::cout << colony->get_best_tour_length() << "\t";
-    std::cout << colony->get_best_tour_length_in_iteration() << "\t";
 
-    if(stagnation_measure == STAG_VARIATION_COEFFICIENT) {
-      std::cout << colony->get_variation_coefficient();
+    if(!hide_iteration_flag) {
+      std::cout << (i+1) << "\t";
+      std::cout << timer() << "\t";
+      std::cout << colony->get_best_tour_length() << "\t";
+      std::cout << colony->get_best_tour_length_in_iteration() << "\t";
+
+      if(stagnation_measure == STAG_VARIATION_COEFFICIENT) {
+        std::cout << colony->get_variation_coefficient();
+      }
+
+      if(stagnation_measure == STAG_LAMBDA_BRANCHING_FACTOR) {
+        std::cout << colony->get_lambda_branching_factor();
+      }
+
+      if(print_tour_flag) {
+        std::cout << "\t";
+        print_tour(colony->get_best_tour_in_iteration());
+      }
+
+      std::cout << std::endl;
     }
-
-    if(stagnation_measure == STAG_LAMBDA_BRANCHING_FACTOR) {
-      std::cout << colony->get_lambda_branching_factor();
-    }
-
-    if(print_tour_flag) {
-      std::cout << "\t";
-      print_tour(colony->get_best_tour_in_iteration());
-    }
-
-    std::cout << std::endl;
   }
   std::cout << std::endl;
   std::cout << "best\tordering" << std::endl;
